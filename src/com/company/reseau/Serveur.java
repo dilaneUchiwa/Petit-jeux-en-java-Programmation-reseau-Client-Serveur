@@ -21,6 +21,8 @@ public class Serveur {
     public static int jetons=0;
 
     public static boolean salonFermer=false;
+
+    public static Client client;
     ServerSocket standardiste;
     Socket socket;
     BufferedReader entree;
@@ -33,10 +35,9 @@ public class Serveur {
         try {
             this.standardiste = new ServerSocket(portEcoute);
             salon=new Partie(this.standardiste);
-
-            System.out.println("En attente d'un client....");
+            System.out.println("En attente des client....");
+            Serveur.client=new Client(23000,"localhost");
             AttendreLesClient(this);
-         // System.out.println("Le show peut commencer...");
 
         } catch (IOException e) {
             System.out.println("probleme de connexion");
@@ -53,14 +54,13 @@ public class Serveur {
                         serveur.entree = new BufferedReader(new InputStreamReader(serveur.socket.getInputStream()));
                         serveur.sortie = new PrintStream(serveur.socket.getOutputStream());
 
-                        BlocSalon.update(serveur.socket.getInetAddress().getCanonicalHostName(),this);
-
-
-                        serveur.salon.getJoueurs().forEach((joueur)->{
-                            serveur.envoyerNom(joueur);
-                        });
-                        serveur.sortie.println("EndbyDiablo");
-                        serveur.envoyerNomToEveryone(serveur.socket);
+//                        BlocSalon.update(serveur.socket.getInetAddress().getHostName(),this);
+//
+//                        serveur.salon.getJoueurs().forEach((joueur)->{
+//                            serveur.envoyerNom(joueur);
+//                        });
+//                        serveur.sortie.println("EndbyDiablo");
+//                        serveur.envoyerNomToEveryone(serveur.socket);
 
                         salon.addClient(serveur.socket,serveur.entree,serveur.sortie);
 
@@ -75,9 +75,6 @@ public class Serveur {
 
     }
 
-    public static void fermerlesalon(){
-
-    }
     public void envoyerNom(Socket socket){
            this.sortie.println(socket.getInetAddress().getHostName());
     }
@@ -95,10 +92,7 @@ public class Serveur {
     }
     public void envoyerCelluletoEveryone(Cellule c) {
 
-        if (BlocGrilleImage.jeton || Serveur.jetons==salon.getJoueurs().toArray().length) {
-            BlocGrilleImage.jeton=false;
-            Serveur.jetons=0;
-        };
+
         salon.sorties.forEach((element)->{
             if(element.equals(salon.sorties.get(Serveur.jetons)))element.println(c.ligne + "+" + c.colonne+"+"+true);
             else element.println(c.ligne + "+" + c.colonne+"+"+false);
@@ -107,13 +101,14 @@ public class Serveur {
     }
     public void envoyerCelluletoEveryoneInitiale(Cellule c) {
 
+
         salon.sorties.forEach((element)->{
             //element.println("arreted'enregistrerlesnomsdesjoueurs");
-            element.println("sagueuditqu'onpeutcommencer");
-            element.println(c.ligne + "+" + c.colonne+"+"+false);
+            if(element!=salon.sorties.get(0)) {
+                element.println("sagueuditqu'onpeutcommencer");
+                element.println(c.ligne + "+" + c.colonne + "+" + false);
+            }
         });
-        BlocGrilleImage.jeton=true;
-        //Serveur.jetons=salon.getJoueurs().toArray().length;
     }
 
     public Cellule recevoirCellule() {
@@ -124,11 +119,11 @@ public class Serveur {
         try {
 
             System.out.println("valeur de jeton :"+Serveur.jetons);
-            if (Serveur.jetons==Serveur.salon.getJoueurs().toArray().length){
-                BlocGrilleImage.jeton=true;
-            }else {
-                this.entree=salon.entrees.get(Serveur.jetons);
-                Serveur.jetons++;
+
+            this.entree=salon.entrees.get(Serveur.jetons);
+            Serveur.jetons++;
+            if(jetons==salon.getJoueurs().toArray().length){
+                Serveur.jetons=0;
             }
 
             chaine = this.entree.readLine();
@@ -137,9 +132,9 @@ public class Serveur {
 
         } catch (IOException e) {
             System.out.println("Erreur de lecture");
-            return null;
         }
 //    }
+        return null;
     }
 
 }

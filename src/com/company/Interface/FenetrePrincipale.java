@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class FenetrePrincipale extends JFrame {
-
-    Object moiPourActualisation;
     public FenetrePrincipale(){
         super("Pétit jeu java en réseau".toUpperCase(Locale.ROOT));
         this.setIconImage(new ImageIcon("src\\com\\company\\image\\2.jpg").getImage());

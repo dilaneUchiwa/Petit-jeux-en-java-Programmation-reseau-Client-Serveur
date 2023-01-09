@@ -46,35 +46,33 @@ public class Client {
             this.entree=new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.sortie=new PrintStream(socket.getOutputStream());
 
-            while (true){
-                String nom=recevoirNom();
-                nomDesjoueurs.add(nom);
-                BlocSalon.update(nom,this);
-                if(nom.equals("EndbyDiablo"))break;
-            }
+//            while (true){
+//                if(recevoirNom().equals("EndbyDiablo"))break;
+//            }
 
             // Pour recuperer les noms des autres machines du reseau
 
-            Client.nomDesjoueurs.remove("EndbyDiablo");
-            Thread AttendreLesAutresJoueurs=new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String nom=recevoirNom();
-                    while (nom!=null){
-                        if(nom=="arreted'enregistrerlesnomsdesjoueurs");{
-                            for (Thread t:
-                                    Thread.getAllStackTraces().keySet()) {
-                                if(t.getId()==Client.idThreadAttente) t.stop();
-                            }
-                        }
-                        BlocSalon.update(nom,this);
-                        nom=recevoirNom();
-                    }
-                }
-            });
-            idThreadAttente=AttendreLesAutresJoueurs.getId();
-            AttendreLesAutresJoueurs.start();
-
+//            Client.nomDesjoueurs.remove("EndbyDiablo");
+//            Thread AttendreLesAutresJoueurs=new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    String nom=recevoirNom();
+//                    while (nom!=null){
+//                        if(nom=="arreted'enregistrerlesnomsdesjoueurs");{
+//                            for (Thread t:
+//                                    Thread.getAllStackTraces().keySet()) {
+//                                if(t.getId()==Client.idThreadAttente) t.stop();
+//                            }
+//                        }
+//                        BlocSalon.update(nom,this);
+//                        nom=recevoirNom();
+//                    }
+//                }
+//            });
+//            idThreadAttente=AttendreLesAutresJoueurs.getId();
+//            AttendreLesAutresJoueurs.start();
+//
+//
             return true;
         } catch (IOException e) {
             return false;
@@ -84,7 +82,6 @@ public class Client {
         //if(this.socket.isClosed()) System.out.println("Vous n'etes pas dans un salon");
 
         this.sortie.println(c.ligne+"+"+c.colonne);
-        //BlocGrilleImage.jeton=false;
     }
     public Cellule recevoirCellule() {
         Cellule c;
@@ -94,6 +91,7 @@ public class Client {
         try {
             chaine = this.entree.readLine();
             mot = chaine.split("\\+");
+
             BlocGrilleImage.jeton=Boolean.parseBoolean(mot[2]);
             return new Cellule(Integer.parseInt(mot[0]), Integer.parseInt(mot[1]));
 
@@ -112,7 +110,6 @@ public class Client {
         try {
             chaine = this.entree.readLine();
             if(chaine.equals("sagueuditqu'onpeutcommencer")) {
-
                 chaine = this.entree.readLine();
                 mot = chaine.split("\\+");
                 BlocGrilleImage.jeton=Boolean.parseBoolean(mot[2]);

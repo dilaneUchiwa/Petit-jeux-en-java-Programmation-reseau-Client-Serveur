@@ -13,8 +13,8 @@ import java.awt.event.ActionListener;
 
 public class BlocPrincipale extends JPanel {
     Object moi;
-    int n_ligne=10;
-    int n_colonne=10;
+    int n_ligne=8;
+    int n_colonne=8;
 
     public static JPanel traceDeMoi;
     public static JLabel labelJeton;
@@ -24,14 +24,6 @@ public class BlocPrincipale extends JPanel {
     public BlocPrincipale(Object moi){
         super();
         this.moi=moi;
-//        JMenuBar menuBar=new JMenuBar();
-//        this.add(menuBar);
-//
-//        JMenuItem menuPartie=new JMenuItem("Partie");
-//        menuBar.add(menuPartie);
-//        JMenuItem menuApropos=new JMenuItem("A propos ?");
-//        menuBar.add(menuApropos);
-
 
         panelintermediaire1=new JPanel();
         JPanel panelintermediaire2=new JPanel(new FlowLayout(FlowLayout.CENTER,100,20));
@@ -100,19 +92,32 @@ public class BlocPrincipale extends JPanel {
     }
     private void lancerPartie(Object moi){
         if(moi instanceof Serveur) {
-            //on genere la cellule initiale et on envoie à tous le monde
+            //on genere la cellule initiale et on envoie aux autres joueurs du reseau puis on donne le jeton au client du serveur
             BlocGrilleImage.cellule = new Cellule((int) (Math.random() * n_ligne), (int) (Math.random() * n_colonne));
+            BlocGrilleImage.jeton=true;
+            labelJeton.setText("C'est votre tour");
+            labelJeton.setForeground(Color.blue);
+
+
             ((Serveur) moi).envoyerCelluletoEveryoneInitiale(BlocGrilleImage.cellule);
+        }else {
+            labelJeton.setText("C'est n'est pas votre tour");
         }
 
-        labelJeton.setText("C'est n'est pas encore votre tour");
+        // on enleve les elements d'indication d'attente du lancement de la partie et on mets les bouttons
         remove(this.panelintermediaire1);
         this.panelintermediaire1=new JPanel();
         panelintermediaire1.add(new BlocGrilleImage(n_ligne,n_colonne,moi));
+
         this.add(this.panelintermediaire1);
+
+        // on met à jour l'interface
         SwingUtilities.updateComponentTreeUI(this);
     }
     private void initialisationCellule(){
+
+        //ceci est destiné au client qui va attendre que le serveur envoi la cellule initiale genere  et arrete d'attendre une fois que c'est fait
+        
         Thread initialisation=new Thread(new Runnable() {
             @Override
             public void run() {

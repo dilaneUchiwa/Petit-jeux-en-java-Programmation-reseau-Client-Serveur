@@ -54,13 +54,15 @@ public class BlocSalon extends JPanel {
                 throw new RuntimeException(e);
             }
             nomServeur.setFont(Constante.styleParticipant);
-           nomServeur.setForeground(Color.red);
+            nomServeur.setForeground(Color.red);
             panelIntermediaire.add(nomServeur);
            Serveur.salon.getJoueurs().forEach((joueur)->{
-               JLabel nomJoueur=new JLabel("  "+joueur.getInetAddress().getHostName());
-               nomJoueur.setFont(Constante.styleParticipant);
-               nomJoueur.setForeground(Color.green);
-               panelIntermediaire.add(nomJoueur);
+               if(joueur.getInetAddress().getHostName().toString()!="127.0.0.1") {
+                   JLabel nomJoueur = new JLabel("  " + joueur.getInetAddress().getHostName());
+                   nomJoueur.setFont(Constante.styleParticipant);
+                   nomJoueur.setForeground(Color.green);
+                   panelIntermediaire.add(nomJoueur);
+               }
            });
 
            nbreParticipant=Serveur.salon.getJoueurs().toArray().length+1;

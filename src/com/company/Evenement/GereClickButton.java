@@ -30,12 +30,11 @@ public class GereClickButton  implements ActionListener {
 
             }
             if(nature instanceof Serveur){
-                ((Serveur) nature).envoyerCelluletoEveryone(moi);
+                (Serveur.client).envoyerCellule(moi);
             }
             else{
                 ((Client)nature).envoyerCellule(moi);
             }
-            BlocGrilleImage.jeton=false;
         }
 
 

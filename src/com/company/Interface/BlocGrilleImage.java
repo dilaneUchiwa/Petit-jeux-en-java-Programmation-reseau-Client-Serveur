@@ -30,21 +30,23 @@ public class BlocGrilleImage extends JPanel{
 
         if(moi instanceof Serveur) {
 
-            Thread recevoir = new Thread(new Runnable() {
+            Thread recevoirServeur = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if(BlocGrilleImage.jeton){
-                        BlocPrincipale.labelJeton.setText("C'est votre tour");
-                        BlocPrincipale.labelJeton.setForeground(Color.blue);
-                        SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
-                    }
-                    else{
-                        BlocPrincipale.labelJeton.setText("Ce n'est votre tour");
-                        BlocPrincipale.labelJeton.setForeground(Color.red);
-                        SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
-                    }
-
                     Cellule c = ((Serveur) moi).recevoirCellule();
+                    while (c!=null) {
+                        ((Serveur)moi).envoyerCelluletoEveryone(c);
+                        c = ((Serveur) moi).recevoirCellule();
+                    }
+                }
+            });
+            recevoirServeur.start();
+            Thread recevoirClient = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    System.out.println("valeur jeton :"+BlocGrilleImage.jeton);
+                    Cellule c = ( Serveur.client).recevoirCellule();
                     while (c!=null) {
                         if(BlocGrilleImage.jeton){
                             BlocPrincipale.labelJeton.setText("C'est votre tour");
@@ -52,7 +54,7 @@ public class BlocGrilleImage extends JPanel{
                             SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
                         }
                         else{
-                            BlocPrincipale.labelJeton.setText("Ce n'est votre tour");
+                            BlocPrincipale.labelJeton.setText("Ce n'est votre pas tour");
                             BlocPrincipale.labelJeton.setForeground(Color.red);
                             SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
                         }
@@ -60,23 +62,23 @@ public class BlocGrilleImage extends JPanel{
                             BlocGrilleImage.buttons[BlocGrilleImage.cellule.ligne][BlocGrilleImage.cellule.colonne].setIcon(null);
                             BlocGrilleImage.buttons[c.ligne][c.colonne].setIcon(BlocGrilleImage.image);
                             BlocGrilleImage.cellule = c;
-                            ((Serveur)moi).envoyerCelluletoEveryone(c);
                         }
-                        c = ((Serveur) moi).recevoirCellule();
+                        c = ( Serveur.client).recevoirCellule();
                     }
                 }
             });
-            recevoir.start();
+            recevoirClient.start();
 
         }
         else {
 
-            // je lance le thread qui va constament verifier si une case a ete active chez les autres
+            // je lance le thread qui va constament verifier si une case a ete active chez les autres et mettre à jour sur l'ecran
 
             Thread recevoir = new Thread(new Runnable() {
 
                 @Override
                 public void run() {
+                    System.out.println("valeur jeton :"+BlocGrilleImage.jeton);
                     Cellule c = ((Client) moi).recevoirCellule();
                     while (c!=null) {
                         if(BlocGrilleImage.jeton){
@@ -85,7 +87,7 @@ public class BlocGrilleImage extends JPanel{
                             SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
                         }
                         else{
-                            BlocPrincipale.labelJeton.setText("Ce n'est votre tour");
+                            BlocPrincipale.labelJeton.setText("Ce n'est pas votre tour");
                             BlocPrincipale.labelJeton.setForeground(Color.red);
                             SwingUtilities.updateComponentTreeUI(BlocPrincipale.traceDeMoi);
                         }
@@ -103,12 +105,14 @@ public class BlocGrilleImage extends JPanel{
 
 
         buttons[BlocGrilleImage.cellule.ligne][BlocGrilleImage.cellule.colonne].setIcon(image);
+
         for (int i=0;i<buttons.length;i++)
             for (int j=0;j<buttons[i].length;j++)
                 this.add(buttons[i][j]);
 
         this.setPreferredSize(new Dimension(450,450));
         this.setBackground(Color.cyan);
+
 
     }
 }

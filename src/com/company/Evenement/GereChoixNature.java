@@ -8,6 +8,7 @@ import com.company.reseau.Serveur;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
 
 public class GereChoixNature implements ActionListener {
     JFrame fenetre;
@@ -27,16 +28,13 @@ public class GereChoixNature implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         fenetre.remove(choixinteface);
-//        if(isServeur) this.moi=new Serveur(23000);
-//        else this.moi=new Client(23000,"SAGUEU");
-
         if(isServeur) this.moi=new Serveur(23000);
-        else{
+        else {
             String nomServeur=new PanelChoisirServeur().getNom();
             if(nomServeur!=null){
                 this.moi=new Client(23000,nomServeur);
-            }
-        }
+            }}
+
         fenetre.add(new BlocPrincipale(moi));
 
         SwingUtilities.updateComponentTreeUI(fenetre);
